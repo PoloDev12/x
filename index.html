@@ -1,0 +1,28 @@
+<!-- Section commentaire -->
+<input id="titre" placeholder="Titre" />
+<textarea id="commentaire" placeholder="Commentaire"></textarea>
+<button onclick="envoyerCommentaire(
+  document.getElementById('titre').value,
+  document.getElementById('commentaire').value
+)">Envoyer</button>
+
+<script>
+async function envoyerCommentaire(titre, commentaire) {
+  const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSc_ku5T93yKn0i70qzBV4byaKpGIU19GHm6e16fdoIDQwm1gg/formResponse";
+
+  await fetch(formUrl, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      "entry.667092912": titre,
+      "entry.2040096845": commentaire,
+    })
+  });
+
+  alert("Commentaire envoyé ✅");
+}
+</script>
+
+</body>
+</html>
